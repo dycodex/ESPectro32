@@ -32,6 +32,16 @@
 
 #define WIFIMANAGER_DEFAULT_TIMEOUT 60000/portTICK_PERIOD_MS
 
+/**
+ * @brief WiFiManager class
+ *
+ * It wraps WiFi station functionalities to connect to Access Point. It supports connecting to an Access Point using stored WiFi credentials.
+ * When no credentials stored, it will activate `Smart Config` so you can "transfer" the credentials to it via Smart Config app (available for iOS and Android).
+ * Upon successful connection, the credentials will be stored to be used later.
+ *
+ * Currently only supports as "station". Possibly later will make it possible as "access point".
+ *
+ */
 class WiFiManager: public Task {
 public:
 
@@ -50,9 +60,18 @@ public:
 	WiFiManager();
 	virtual ~WiFiManager();
 
-	esp_err_t begin(wifi_mode_t mode, bool autoConnect = true);
+	/**
+	 * Call this method first before anything else.
+	 *
+	 * @param[in] mode The WiFi mode, default as `station`
+	 * @param[in] autoConnect Setting this to `true` will make it automatically connect to stored SSID and stored password, or if no SSD stored, it will automatically activate `Smart Config`.
+	 */
+	esp_err_t begin(wifi_mode_t mode = WIFI_MODE_STA, bool autoConnect = true);
 	esp_err_t connectToAP(const char *ssid, const char *pwd, uint32_t ticks_to_wait = WIFIMANAGER_DEFAULT_TIMEOUT);
-	//esp_err_t connectAsync(const char *ssid, const char *pwd, uint32_t ticks_to_wait);
+
+	/**
+	 * Explicitly start Smart Config. Most of the time, you don't have to call it manually, unless you want to change the SSID it connects to, possibly via hardware action (button push?).
+	 */
 	esp_err_t startSmartConfig(smartconfig_type_t sc_type = SC_TYPE_ESPTOUCH, uint32_t ticks_to_wait = WIFIMANAGER_DEFAULT_TIMEOUT);
 
 	void disconnect();
@@ -80,6 +99,9 @@ public:
 
 	void notifyEvent(system_event_t *event);
 
+	/**
+	 * Call this method to "block" current process until WiFi is connected.
+	 */
 	bool waitForConnection();
 
 private:
