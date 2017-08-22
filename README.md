@@ -8,7 +8,13 @@ Please check ESP-IDF docs for getting started instructions.
 
 [ESPectro32](https://shop.makestro.com/product/espectro32/) is an IoT development board based-on ESP32 MCU, made by [DycodeX](https://dycodex.com).
 
+ESPectro32 is official development board for Republic of IoT (RIoT) hackathon. Made possible by awesome collaboration of two countries' IoT and maker communities: Makestro (Indonesia) and MyIoTC (Malaysia).
+
 (...more details to go...)
+
+## Using It
+
+You can not use this library directly, as this is just a library or component (in ESP-IDF term). So, you need to "include" it in a project. Take a look [ESPectro32-IDF](https://github.com/dycodex/ESPectro32-IDF) repository to see how it's used in an ESP-IDF project. 
 
 ## Credits
 
