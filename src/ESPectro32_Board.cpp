@@ -10,7 +10,6 @@
 
 ESPectro32_Board::ESPectro32_Board() {
 	// TODO Auto-generated constructor stub
-
 }
 
 ESPectro32_Board::~ESPectro32_Board() {
@@ -46,6 +45,11 @@ bool ESPectro32_Board::begin() {
 	return true;
 }
 
+/**
+ * @brief Get RGB LED object of the ESPectro32 board
+ * @return ESPectro32_RGBLED object
+ * @see ESPectro32_RGBLED
+ */
 ESPectro32_RGBLED& ESPectro32_Board::RgbLed() {
 	if (rgbLed_ == NULL) {
 		rgbLed_ = new ESPectro32_RGBLED();
@@ -54,26 +58,50 @@ ESPectro32_RGBLED& ESPectro32_Board::RgbLed() {
 	return *rgbLed_;
 }
 
+/**
+ * @brief Turn on built-in LED
+ */
 void ESPectro32_Board::turnOnLED() {
 	LED().turnOn();
 }
 
+/**
+ * @brief Turn off built-in LED
+ */
 void ESPectro32_Board::turnOffLED() {
 	LED().turnOff();
 }
 
+/**
+ * @brief blink the built-in LED
+ * @param interval how often is the blinking process
+ * @param count how many times to blink
+ */
 void ESPectro32_Board::blinkLED(uint32_t interval, uint32_t count) {
 	LED().blink(interval, count);
 }
 
+/**
+ * @brief fade the built-in LED
+ * @param interval how often is the fadeing process
+ * @param count how many times to fade
+ */
 void ESPectro32_Board::fadeLED(uint32_t duration, uint32_t count) {
 	LED().fade(duration);
 }
 
+/**
+ * @brief stop the current LED animation
+ */
 void ESPectro32_Board::stopLEDAnimation() {
 	LED().stopAnimation();
 }
 
+/**
+ * @breif get the object of ESPectro32' LED
+ * @return ESPeectro32_LED object
+ * @see ESPectro32_LED
+ */
 ESPectro32_LED& ESPectro32_Board::LED() {
 	if (led_ == NULL) {
 		led_ = new ESPectro32_LED();
@@ -83,10 +111,18 @@ ESPectro32_LED& ESPectro32_Board::LED() {
 	return *led_;
 }
 
+/**
+ * @brief Toggle the current state of the LED
+ */
 void ESPectro32_Board::toggleLED() {
 	LED().toggle();
 }
 
+/**
+ * @brief Get ESPectro32 Button A object
+ * @return ESPectro32_Button object of Button A
+ * @see ESPectro32_Button
+ */
 ESPectro32_Button& ESPectro32_Board::ButtonA() {
 	if (buttonA_ == NULL) {
 		buttonA_ = new ESPectro32_Button(ESPECTRO32_BUTTON_A_PIN);
@@ -96,6 +132,11 @@ ESPectro32_Button& ESPectro32_Board::ButtonA() {
 	return *buttonA_;
 }
 
+/**
+ * @brief Get ESPectro32 Button B object
+ * @return ESPectro32_Button object of Button B
+ * @see ESPectro32_Button
+ */
 ESPectro32_Button& ESPectro32_Board::ButtonB() {
 	if (buttonB_ == NULL) {
 		buttonB_ = new ESPectro32_Button(ESPECTRO32_BUTTON_B_PIN);
