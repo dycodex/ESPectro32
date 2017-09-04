@@ -25,7 +25,16 @@
 #define ESPECTRO32_INFO_PRINT(...)   ESP_LOGI("ESPECTRO32", __VA_ARGS__);
 #define ESPECTRO32_ERROR_PRINT(...)  ESP_LOGE("ESPECTRO32", __VA_ARGS__);
 
-/**
+/** \example examples/ADCRead/ADCRead.ino
+ *  \example examples/Button/Button.ino
+ *  \example examples/LEDMatrix/LEDMatrix.ino
+ *  \example examples/Neopixel/Neopixel.ino
+ *  \example examples-idf/ex_adc.hpp
+ *  \example examples-idf/ex_sdcard.hpp
+ *  \example examples-idf/ex_led_pot.hpp
+ *  \example examples-idf/ex_button.hpp
+ *  \example examples-idf/ex_leds_anim.hpp
+ *  \example examples-idf/ex_wifi_conn_anim.hpp
  * @brief The holy grail of ESPectro32. The gate to awesomeness of the board.
  */
 class ESPectro32_Board {

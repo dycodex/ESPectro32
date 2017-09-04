@@ -16,6 +16,12 @@ ESPectro32 is official development board for Republic of IoT (RIoT) hackathon. M
 
 You can not use this library directly, as this is just a library or component (in ESP-IDF term). So, you need to "include" it in a project. Take a look [ESPectro32-IDF](https://github.com/dycodex/ESPectro32-IDF) repository to see how it's used in an ESP-IDF project. 
 
+## Using with Arduino IDE
+
+You can download this library and extract it to `Documents/Arduino/libraries` directory on Windows or `$HOME/Arduino/libraries` on Linux.
+
+Then, you must extract the content of the `lib` directory inside this library to `Documents/Arduino/libraries` or `$HOME/Arduino/libraries` directory as well.
+
 ## Credits
 
 * [esp32-snippets/cpp_utils](https://github.com/nkolban/esp32-snippets/tree/master/cpp_utils)
