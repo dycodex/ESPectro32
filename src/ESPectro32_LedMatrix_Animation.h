@@ -51,7 +51,14 @@ public:
 	void setFrameWithDataCallback(uint8_t frameNo, ESPectro32_LedMatrix_Animation::FrameDataCallback cb);
 
 	void start(Animator::AnimationUpdateCallback animUpdateCallback, Animator::AnimationFinishedCallback animFinishedCallback,
-					   uint16_t duration = 0, uint16_t updateInterval = 0);
+					   uint16_t duration = 0, uint16_t updateInterval = 0, bool repeat = false);
+
+	/**
+	 * @brief Start animation
+	 *
+	 * @param[in] duration How long the animation will be (for all frames).
+	 * @param[in] repeat Set to true to repeat animation when finished.
+	 */
 	void start(uint16_t duration = 0, bool repeat = false);
 	void stop();
 	void run();
@@ -71,6 +78,13 @@ public:
 	ESPectro32_LedMatrix_ScrollTextAnimation();
 	~ESPectro32_LedMatrix_ScrollTextAnimation();
 
+	/**
+	 * @brief Conveniently make scrolling text animation
+	 *
+	 * @param[in] text Text to display.
+	 * @param[in] duration How long the animation will be (for all frames).
+	 * @param[in] repeat Set to true to repeat animation when finished.
+	 */
 	void scrollText(const char *text, uint16_t duration = 0, bool repeat = false);
 private:
 	char *scrolledText_ = NULL;

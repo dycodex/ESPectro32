@@ -65,7 +65,7 @@ void ESPectro32_Button::runAsync(void *data) {
 
 		//run();
 		examine();
-		vTaskDelay(50);
+		vTaskDelay(50/portTICK_PERIOD_MS);
 	}
 }
 
@@ -242,7 +242,7 @@ void ESPectro32_Button::run() {
 */
 
 void ESPectro32_Button::onButtonDown(ButtonActionCallback cb) {
-	 btnDownCallback_ = cb;
+	btnDownCallback_ = cb;
 }
 
 void ESPectro32_Button::onButtonUp(ButtonActionCallback cb) {

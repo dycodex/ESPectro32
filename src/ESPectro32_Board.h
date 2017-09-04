@@ -46,9 +46,11 @@ public:
 	 *
 	 * This method is for getting LED object so that you can work with it, either turn it on/off, blink it, toggle it, or fade it in/out.
 	 *
+	 * @param[in] pin GPIO number where the LED attached. Default to `ESPECTRO32_LED_PIN`
+	 *
 	 * @return The LED object.
 	 */
-	ESPectro32_LED &LED();
+	ESPectro32_LED &LED(uint8_t pin = ESPECTRO32_LED_PIN);
 	void turnOnLED();
 	void turnOffLED();
 	void blinkLED(uint32_t interval = 500, uint32_t count = UINT16_MAX);

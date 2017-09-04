@@ -12,6 +12,7 @@
 #include "ESPectro32_Constants.h"
 #include <RgbLedColor.h>
 #include <Task.h>
+#include <PWM.h>
 
 /**
  * @brief The LED animation supported, for now
@@ -117,12 +118,18 @@ public:
     void setAnimation(ESPectro32_LED_AnimationType animType, uint32_t speed, uint32_t count = UINT16_MAX);
     void setAnimationTimeout(unsigned long timeOut);
 
+    void setBrightnessPercentage(uint8_t percent);
+    void disableBrightnessControl();
+
 private:
     uint8_t pin_;
     bool activeHigh_;
 
     ESPectro32_LED_Animator *animator_ = NULL;
     ESPectro32_LED_Animator *getAnimatorPtr();
+
+    PWM *ledPwm_ = NULL;
+    PWM *getLedPwmPtr();
 };
 
 

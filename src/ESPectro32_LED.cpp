@@ -36,6 +36,8 @@ ESPectro32_LED::~ESPectro32_LED() {
         delete animator_;
         animator_ = NULL;
     }
+
+    disableBrightnessControl();
 }
 
 void ESPectro32_LED::begin() {
@@ -141,6 +143,26 @@ ESPectro32_LED_Animator *ESPectro32_LED::getAnimatorPtr() {
 	}
 
 	return animator_;
+}
+
+void ESPectro32_LED::setBrightnessPercentage(uint8_t percent) {
+	getLedPwmPtr()->setDutyPercentage(activeHigh_? percent: (100 - percent));
+}
+
+void ESPectro32_LED::disableBrightnessControl() {
+	if (ledPwm_ != NULL) {
+		ledPwm_->stop();
+		delete ledPwm_;
+		ledPwm_ = NULL;
+	}
+}
+
+PWM* ESPectro32_LED::getLedPwmPtr() {
+	if (ledPwm_ == NULL) {
+		ledPwm_ = new PWM(pin_, LEDC_BASE_FREQ);
+	}
+
+	return ledPwm_;
 }
 
 
@@ -356,3 +378,4 @@ void ESPectro32_LED_Animator::stop() {
 
 	//Task::stop();
 }
+

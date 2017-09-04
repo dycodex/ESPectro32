@@ -53,13 +53,13 @@ void ESPectro32_LedMatrix_Animation::setFrameWithDataCallback(uint8_t frameNo,
 void ESPectro32_LedMatrix_Animation::start(
 		Animator::AnimationUpdateCallback animUpdateCallback,
 		Animator::AnimationFinishedCallback animFinishedCallback,
-		uint16_t duration, uint16_t updateInterval) {
+		uint16_t duration, uint16_t updateInterval, bool repeat) {
 
 	if (this->ledMatrix_ == NULL || frameCount_ == 0) {
 		return;
 	}
 
-	getAnimatorPtr()->start(animUpdateCallback, animFinishedCallback, duration, updateInterval);
+	getAnimatorPtr()->start(animUpdateCallback, animFinishedCallback, duration, updateInterval, repeat);
 }
 
 void ESPectro32_LedMatrix_Animation::stop() {
