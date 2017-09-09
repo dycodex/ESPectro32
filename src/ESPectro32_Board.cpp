@@ -7,6 +7,8 @@
 
 #include "ESPectro32_Board.h"
 
+// use 5000 Hz as a LEDC base frequency
+#define LEDC_BASE_FREQ     5000
 
 ESPectro32_Board::ESPectro32_Board() {
 	// TODO Auto-generated constructor stub
@@ -38,6 +40,8 @@ ESPectro32_Board::~ESPectro32_Board() {
 		delete ledMatrix_;
 		ledMatrix_ = NULL;
 	}
+
+	stopPWM();
 }
 
 ESPectro32_Board ESPectro32;
@@ -238,3 +242,24 @@ void ESPectro32_Board::scanI2C() {
 	}
 	ESPECTRO32_INFO_PRINT("Found %d I2C devices by scanning.", foundCount);
 }
+
+void ESPectro32_Board::analogWrite(int pwmPin, uint32_t val) {
+	getPwmPtr(pwmPin)->setDuty(val);
+}
+
+void ESPectro32_Board::stopPWM() {
+	if (pwm_ != NULL) {
+		pwm_->stop();
+		delete pwm_;
+		pwm_ = NULL;
+	}
+}
+
+PWM* ESPectro32_Board::getPwmPtr(int pwmPin) {
+	if (pwm_ == NULL) {
+		pwm_ = new PWM(pwmPin, LEDC_BASE_FREQ);
+	}
+
+	return pwm_;
+}
+

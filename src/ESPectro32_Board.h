@@ -130,11 +130,18 @@ public:
 	 */
 	void scanI2C();
 
+	void analogWrite(int pwmPin, uint32_t val);
+	void stopPWM();
+
 private:
 	ESPectro32_RGBLED *rgbLed_ = NULL;
 	ESPectro32_LED *led_ = NULL;
 	ESPectro32_Button *buttonA_ = NULL, *buttonB_ = NULL;
 	ESPectro32_LedMatrix *ledMatrix_ = NULL;
+
+	PWM *pwm_ = NULL;
+	int pwmPin_ = 255;
+	PWM *getPwmPtr(int pwmPin);
 };
 
 extern ESPectro32_Board ESPectro32;
