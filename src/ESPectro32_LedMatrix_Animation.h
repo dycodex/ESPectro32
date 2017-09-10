@@ -60,6 +60,7 @@ public:
 	 * @param[in] repeat Set to true to repeat animation when finished.
 	 */
 	void start(uint16_t duration = 0, bool repeat = false);
+	void clearFrames();
 	void stop();
 	void run();
 

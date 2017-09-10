@@ -181,3 +181,18 @@ void ESPectro32_LedMatrix_ScrollTextAnimation::scrollText(const char *text, uint
 
 	}, duration, 50, repeat);
 }
+
+void ESPectro32_LedMatrix_Animation::clearFrames() {
+	if (frameCount_ == 0) {
+		return;
+	}
+
+	for(int i = 0; i < frameCount_; i++) {
+		this->ledMatrix_->setFrame(i);
+		this->ledMatrix_->clear();
+	}
+
+	frameCount_ = 0;
+
+	this->ledMatrix_->begin();
+}
