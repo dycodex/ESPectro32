@@ -144,8 +144,12 @@ void ESPectro32_LedMatrix_ScrollTextAnimation::scrollText(const char *text, uint
 	//printf("Text length: %d\n", strlen(text));
 
 	if (scrolledText_ == NULL) {
-		scrolledText_ = (char*)malloc((strlen(text) + 1));
+		int strlength = (strlen(text) + 1);
+		scrolledText_ = (char*)malloc(strlength);
 		strncpy(scrolledText_, text, strlen(text));
+		scrolledText_[strlength] = '\0';
+
+		//printf("Text length 2: %d %d\n", strlen(scrolledText_), strlength);
 	}
 
 	if (duration == 0) {

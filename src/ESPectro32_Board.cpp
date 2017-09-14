@@ -6,6 +6,8 @@
  */
 
 #include "ESPectro32_Board.h"
+#include <FS.h>
+#include "SD.h"
 
 // use 5000 Hz as a LEDC base frequency
 #define LEDC_BASE_FREQ     5000
@@ -263,3 +265,11 @@ PWM* ESPectro32_Board::getPwmPtr(int pwmPin) {
 	return pwm_;
 }
 
+bool ESPectro32_Board::beginSDCard(uint8_t ssPin) {
+	if(!SD.begin(ESPECTRO32_SDCARD_CSPIN)){
+		ESPECTRO32_DEBUG_PRINT("SD Card Mount Failed");
+		return false;
+	}
+
+	return true;
+}

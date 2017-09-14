@@ -133,6 +133,11 @@ public:
 	void analogWrite(int pwmPin, uint32_t val);
 	void stopPWM();
 
+	/**
+	 * @brief Call this method explicitly before any SD Card-related operations
+	 */
+	bool beginSDCard(uint8_t ssPin = ESPECTRO32_SDCARD_CSPIN);
+
 private:
 	ESPectro32_RGBLED *rgbLed_ = NULL;
 	ESPectro32_LED *led_ = NULL;
