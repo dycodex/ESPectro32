@@ -46,6 +46,7 @@ void ESPectro32_RGBLED_Animation::start(
 		return;
 	}
 
+	forceStop_ = false;
 	animationPrevStarted_ = true;
 	this->rgbLed_.clear();
 

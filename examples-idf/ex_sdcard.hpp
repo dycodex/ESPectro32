@@ -46,14 +46,13 @@ static void list_dir(fs::FS &fs, const char * dirname, uint8_t levels) {
 
 static void load_ex_sdcard(){
 
-	if(!SD.begin(ESPECTRO32_SDCARD_CSPIN)){
-		ESP_LOGE(TAG_EX_SDCARD, "Card Mount Failed");
+	if (!ESPectro32.beginSDCard()) {
 		return;
 	}
 
 	uint8_t cardType = SD.cardType();
 
-	if(cardType == CARD_NONE){
+	if (cardType == CARD_NONE){
 		ESP_LOGE(TAG_EX_SDCARD, "No SD card attached");
 		return;
 	}
