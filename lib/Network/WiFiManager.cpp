@@ -68,9 +68,16 @@ void WiFiManager::notifyEvent(system_event_t* event) {
 			currentStatus_ = WIFI_STATUS_STA_CONNECTING;
 			ESP_LOGI(TAG, "SYSTEM_EVENT_STA_START\n");
 			break;
+//		case SYSTEM_EVENT_STA_CONNECTED:
+//			currentStatus_ = WIFI_STATUS_STA_CONNECTING;
+//			ESP_LOGI(TAG, "SYSTEM_EVENT_STA_CONNECTED\n");
+//			ESP_LOGI(TAG, "SYSREM_EVENT_STA_GOT_IP: %s\n", getStationIpAddress().c_str());
+//			break;
+		case SYSTEM_EVENT_STA_CONNECTED:
 		case SYSTEM_EVENT_STA_GOT_IP:
 			currentStatus_ = WIFI_STATUS_STA_CONNECTED;
-			ESP_LOGI(TAG, "SYSREM_EVENT_STA_GOT_IP: %s\n", getStationIpAddress().c_str());
+			ESP_LOGI(TAG, "SYSTEM_EVENT_STA_CONNECTED\n");
+			//ESP_LOGI(TAG, "SYSREM_EVENT_STA_GOT_IP: %s\n", getStationIpAddress().c_str());
 
 			// Set event bit to sync with other tasks.
 			xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_EVT);
@@ -137,19 +144,22 @@ esp_err_t WiFiManager::begin(wifi_mode_t mode, bool autoConnect) {
     if (savedStaConfig == NULL) {
     		savedStaConfig = (wifi_sta_config_t*)malloc(sizeof(wifi_sta_config_t));
     }
-    esp_err_t loadRes = loadSavedStaConfig(savedStaConfig);
-    if (loadRes == ESP_OK) {
-    		if (autoConnect) {
-    			//ESP_LOGI(TAG, "SSID %s, PASS %s", savedStaConfig->ssid, savedStaConfig->password);
-    			return connectToAP((const char*)savedStaConfig->ssid, (const char*)savedStaConfig->password);
-    		}
-    }
-    else {
-    		ESP_LOGI(TAG, "No WiFi credentials stored. Call connectToAP or start SmartConfig");
-    		if (autoConnect) {
-    			//start smart config?
-    			startSmartConfig();
-    		}
+
+    if (autoConnect) {
+		esp_err_t loadRes = loadSavedStaConfig(savedStaConfig);
+		if (loadRes == ESP_OK) {
+				//if (autoConnect) {
+					//ESP_LOGI(TAG, "SSID %s, PASS %s", savedStaConfig->ssid, savedStaConfig->password);
+					return connectToAP((const char*)savedStaConfig->ssid, (const char*)savedStaConfig->password);
+				//}
+		}
+		else {
+				ESP_LOGI(TAG, "No WiFi credentials stored. Call connectToAP or start SmartConfig");
+				//if (autoConnect) {
+					//start smart config?
+					startSmartConfig();
+				//}
+		}
     }
 
     return ESP_OK;

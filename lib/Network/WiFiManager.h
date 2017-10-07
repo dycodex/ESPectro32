@@ -64,7 +64,7 @@ public:
 	 * Call this method first before anything else.
 	 *
 	 * @param[in] mode The WiFi mode, default as `station`
-	 * @param[in] autoConnect Setting this to `true` will make it automatically connect to stored SSID and stored password, or if no SSD stored, it will automatically activate `Smart Config`.
+	 * @param[in] autoConnect Setting this to `true` will make it automatically connect to stored SSID and stored password, or if no SSD stored, it will automatically activate `Smart Config`. If you want to call `connectToAP` explicitely, set this param to false.
 	 */
 	esp_err_t begin(wifi_mode_t mode = WIFI_MODE_STA, bool autoConnect = true);
 	esp_err_t connectToAP(const char *ssid, const char *pwd, uint32_t ticks_to_wait = WIFIMANAGER_DEFAULT_TIMEOUT);
