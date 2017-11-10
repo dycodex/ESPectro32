@@ -53,7 +53,7 @@ public:
 	} Status_t;
 
 	typedef std::function<void(system_event_t *event)> WifiEventCallback;
-	typedef std::function<void(bool)> WifiConnectedCallback;
+	typedef std::function<void(bool, wifi_config_t* = NULL)> WifiConnectedCallback;
 	typedef std::function<void()> WifiDisconnectedCallback;
 	typedef std::function<void(uint64_t elapsedTime, Status_t status)> WifiConnectingCallback;
 
@@ -72,7 +72,7 @@ public:
 	/**
 	 * Explicitly start Smart Config. Most of the time, you don't have to call it manually, unless you want to change the SSID it connects to, possibly via hardware action (button push?).
 	 */
-	esp_err_t startSmartConfig(smartconfig_type_t sc_type = SC_TYPE_ESPTOUCH, uint32_t ticks_to_wait = WIFIMANAGER_DEFAULT_TIMEOUT);
+	esp_err_t startSmartConfig(smartconfig_type_t sc_type = SC_TYPE_ESPTOUCH, bool fast_mode_en = 0, uint32_t ticks_to_wait = WIFIMANAGER_DEFAULT_TIMEOUT);
 
 	void disconnect();
 	void run();
