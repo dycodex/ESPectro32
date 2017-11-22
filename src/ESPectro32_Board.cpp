@@ -6,8 +6,6 @@
  */
 
 #include "ESPectro32_Board.h"
-#include <FS.h>
-#include "SD.h"
 
 // use 5000 Hz as a LEDC base frequency
 #define LEDC_BASE_FREQ     5000

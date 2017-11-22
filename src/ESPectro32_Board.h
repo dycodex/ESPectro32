@@ -20,6 +20,8 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <driver/adc.h>
+#include <SD.h>
+#include <FS.h>
 
 #define ESPECTRO32_DEBUG_PRINT(...)  ESP_LOGD("ESPECTRO32", __VA_ARGS__);
 #define ESPECTRO32_INFO_PRINT(...)   ESP_LOGI("ESPECTRO32", __VA_ARGS__);
