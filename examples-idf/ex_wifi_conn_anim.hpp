@@ -66,17 +66,20 @@ static void load_ex_wifi_conn_anim() {
 	ledMatrixAnim.start(1800, true);
 
 	wifiMgr.onWiFiConnected([](bool newConn) {
+		//ESP_LOGI("WIFI", "Connected!");
 		ESP_LOGI("WIFI", "IP: %s", wifiMgr.getStationIpAddress().c_str());
 	});
 
-	wifiMgr.begin(WIFI_MODE_STA, true);
+	wifiMgr.begin(WIFI_MODE_STA, false);
+	wifiMgr.connectToAP("YOUR_WIFI_AP_NAME", "YOUR_WIFI_AP_PASS");
 
 	//Actually start
 	wifiMgr.start();
 
 	if (wifiMgr.waitForConnection()) {
+		ESP_LOGI("WIFI", "Wait is over!");
 		ledMatrixAnim.stop();
-
+		ESPectro32.LedMatrix().displayFrame(2);
 		delay(1000);
 
 		ledMatrixTextAnim.onAnimationCompleted([]() {

@@ -42,7 +42,7 @@ static xSemaphoreHandle s_wifi_mux = NULL;
 static smartconfig_status_t currentSmartConfigStatus_ = SC_STATUS_WAIT;
 
 WiFiManager::WiFiManager():
-	Task(0, "wifiManagerTask", 2048, 10)
+	Task(0, "wifiManagerTask", 2048, configMAX_PRIORITIES - 2)
 {
 }
 
@@ -73,24 +73,27 @@ void WiFiManager::notifyEvent(system_event_t* event) {
 //			ESP_LOGI(TAG, "SYSTEM_EVENT_STA_CONNECTED\n");
 //			ESP_LOGI(TAG, "SYSREM_EVENT_STA_GOT_IP: %s\n", getStationIpAddress().c_str());
 //			break;
-		case SYSTEM_EVENT_STA_CONNECTED:
+		//case SYSTEM_EVENT_STA_CONNECTED:
 		case SYSTEM_EVENT_STA_GOT_IP:
 			currentStatus_ = WIFI_STATUS_STA_CONNECTED;
-			ESP_LOGI(TAG, "SYSTEM_EVENT_STA_CONNECTED\n");
+			//ESP_LOGI(TAG, "SYSTEM_EVENT_STA_CONNECTED\n");
 			//ESP_LOGI(TAG, "SYSREM_EVENT_STA_GOT_IP: %s\n", getStationIpAddress().c_str());
 
 			// Set event bit to sync with other tasks.
 			xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_EVT);
 
+			ESP_LOGI(TAG, "SYSTEM_EVENT_STA_GOT_IP: %s\n", getStationIpAddress().c_str());
+
 			//Save WiFi
+			wifi_config_t local_wifi_config;
 			if (newConnection_) {
-				wifi_config_t local_wifi_config;
 				esp_wifi_get_config(ESP_IF_WIFI_STA, &local_wifi_config);
 				saveStaConfig(&local_wifi_config.sta);
 			}
 
 			if (wifiConnectedCallback_) {
-				wifiConnectedCallback_(newConnection_);
+				// ESP_LOGI(TAG, "SYSTEM_EVENT_STA_GOT_IP callback");
+				wifiConnectedCallback_(newConnection_, &local_wifi_config);
 			}
 
 			break;
@@ -134,7 +137,8 @@ esp_err_t WiFiManager::begin(wifi_mode_t mode, bool autoConnect) {
     ERR_ASSERT(TAG, esp_wifi_init(&cfg));
     ERR_ASSERT(TAG, esp_wifi_set_storage(WIFI_STORAGE_RAM));
     esp_wifi_set_mode(mode);
-    esp_wifi_start();
+	esp_wifi_start();
+	
     // Init event group
     s_wifi_event_group = xEventGroupCreate();
     POINT_ASSERT(TAG, s_wifi_event_group);
@@ -142,7 +146,7 @@ esp_err_t WiFiManager::begin(wifi_mode_t mode, bool autoConnect) {
 //    xEventGroupClearBits(s_wifi_event_group, WIFI_CONNECTED_EVT);
 
     if (savedStaConfig == NULL) {
-    		savedStaConfig = (wifi_sta_config_t*)malloc(sizeof(wifi_sta_config_t));
+    	savedStaConfig = (wifi_sta_config_t*)malloc(sizeof(wifi_sta_config_t));
     }
 
     if (autoConnect) {
@@ -157,7 +161,7 @@ esp_err_t WiFiManager::begin(wifi_mode_t mode, bool autoConnect) {
 				ESP_LOGI(TAG, "No WiFi credentials stored. Call connectToAP or start SmartConfig");
 				//if (autoConnect) {
 					//start smart config?
-					startSmartConfig();
+				return startSmartConfig();
 				//}
 		}
     }
@@ -421,13 +425,16 @@ void WiFiManager::runAsync(void* taskData) {
 
 std::string WiFiManager::getStationIpAddress() {
 	tcpip_adapter_ip_info_t ipInfo = getStationIpInfo();
-	std::stringstream s;
+	//std::stringstream s;
+	//ip4_addr1_16(&ipInfo.ip);
+	//s << (int) ip4_addr1_16(&ipInfo.ip) << '.' << (int) ip4_addr2_16(&ipInfo.ip) << '.' << (int) ip4_addr3_16(&ipInfo.ip) << '.' << (int) ip4_addr4_16(&ipInfo.ip);
+	//return s.str();
 
-	ip4_addr1_16(&ipInfo.ip);
+	char ipStr[16];
+	sprintf(ipStr, "%d.%d.%d.%d", (int) ip4_addr1_16(&ipInfo.ip), (int) ip4_addr2_16(&ipInfo.ip), (int) ip4_addr3_16(&ipInfo.ip), (int) ip4_addr4_16(&ipInfo.ip));
+	
+	return std::string(ipStr);
 
-	s << (int) ip4_addr1_16(&ipInfo.ip) << '.' << (int) ip4_addr2_16(&ipInfo.ip) << '.' << (int) ip4_addr3_16(&ipInfo.ip) << '.' << (int) ip4_addr4_16(&ipInfo.ip);
-
-	return s.str();
 }
 
 static void sc_callback(smartconfig_status_t status, void *pdata)
@@ -472,7 +479,7 @@ static void sc_callback(smartconfig_status_t status, void *pdata)
     }
 }
 
-esp_err_t WiFiManager::startSmartConfig(smartconfig_type_t sc_type, uint32_t ticks_to_wait) {
+esp_err_t WiFiManager::startSmartConfig(smartconfig_type_t sc_type, bool fast_mode_en, uint32_t ticks_to_wait) {
 
 
 //	if (s_sc_event_group == NULL) {
@@ -494,10 +501,19 @@ esp_err_t WiFiManager::startSmartConfig(smartconfig_type_t sc_type, uint32_t tic
 
 	ESP_LOGI(TAG, "STARTING SmartConfig\n");
 
+	esp_err_t result;
 //	xEventGroupClearBits(s_sc_event_group, SC_STOP_REQ_EVT);
 	xEventGroupClearBits(s_wifi_event_group, SC_STOP_REQ_EVT);
 
-	ESP_ERROR_CHECK( esp_smartconfig_set_type(sc_type) );
+	//ESP_ERROR_CHECK( esp_smartconfig_set_type(sc_type) );
+	result = esp_smartconfig_set_type(sc_type);
+	if (result != ESP_OK) {
+		ESP_LOGE(TAG, "esp_smartconfig_set_type failed with reason: %d", result);
+		return result;
+	}
+
+	ESP_ERROR_CHECK( esp_smartconfig_fast_mode(fast_mode_en) );
+
 	//ERR_ASSERT(TAG, esp_smartconfig_fast_mode(true));
 	ESP_ERROR_CHECK( esp_smartconfig_start(sc_callback) );
 
