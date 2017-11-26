@@ -104,6 +104,8 @@ public:
 	 */
 	bool waitForConnection();
 
+	bool isConnected();
+
 private:
 	wifi_mode_t currentMode_ = WIFI_MODE_NULL;
 

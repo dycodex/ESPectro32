@@ -42,7 +42,7 @@ static xSemaphoreHandle s_wifi_mux = NULL;
 static smartconfig_status_t currentSmartConfigStatus_ = SC_STATUS_WAIT;
 
 WiFiManager::WiFiManager():
-	Task(0, "wifiManagerTask", 2048, configMAX_PRIORITIES - 2)
+	Task(0, "wifiManagerTask", 2048*2, configMAX_PRIORITIES - 2)
 {
 }
 
@@ -340,6 +340,10 @@ tcpip_adapter_ip_info_t WiFiManager::getStationIpInfo() {
 bool WiFiManager::waitForConnection() {
 	EventBits_t uxBits = xEventGroupWaitBits(s_wifi_event_group, WIFI_CONNECTED_EVT, false, false, connectTimeout_);
 	return (uxBits & WIFI_CONNECTED_EVT);
+}
+
+bool WiFiManager::isConnected() {
+	return (currentStatus_ == WIFI_STATUS_STA_CONNECTED);
 }
 
 void WiFiManager::run() {
