@@ -44,8 +44,6 @@ ESPectro32_Board::~ESPectro32_Board() {
 	stopPWM();
 }
 
-ESPectro32_Board ESPectro32;
-
 bool ESPectro32_Board::begin() {
 	return true;
 }
@@ -92,7 +90,7 @@ void ESPectro32_Board::blinkLED(uint32_t interval, uint32_t count) {
  * @param count how many times to fade
  */
 void ESPectro32_Board::fadeLED(uint32_t duration, uint32_t count) {
-	LED().fade(duration);
+	LED().fade(duration, count);
 }
 
 /**
@@ -172,7 +170,7 @@ int ESPectro32_Board::readAnalog(adc1_channel_t channel, adc_bits_width_t bitWid
 
 	adc1_config_width(bitWidth);
 	adc1_config_channel_atten(channel, atten);
-	int val = adc1_get_voltage(channel);
+	int val = adc1_get_raw(channel);
 
 	return val;
 }
@@ -271,3 +269,5 @@ bool ESPectro32_Board::beginSDCard(uint8_t ssPin) {
 
 	return true;
 }
+
+ESPectro32_Board ESPectro32;

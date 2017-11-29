@@ -199,8 +199,8 @@ esp_err_t WiFiManager::loadSavedStaConfig(wifi_sta_config_t *saved_sta_config) {
     nvs_handle my_handle;
 
     size_t required_size;
-    char* sta_ssid = "";
-    char* sta_password = "";
+    char* sta_ssid = NULL;
+    char* sta_password = NULL;
 
     ESP_LOGI(TAG, "Opening Non-Volatile Storage (NVS)\n");
 

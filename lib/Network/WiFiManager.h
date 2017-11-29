@@ -53,7 +53,7 @@ public:
 	} Status_t;
 
 	typedef std::function<void(system_event_t *event)> WifiEventCallback;
-	typedef std::function<void(bool, wifi_config_t* = NULL)> WifiConnectedCallback;
+	typedef std::function<void(bool, wifi_config_t*)> WifiConnectedCallback;
 	typedef std::function<void()> WifiDisconnectedCallback;
 	typedef std::function<void(uint64_t elapsedTime, Status_t status)> WifiConnectingCallback;
 

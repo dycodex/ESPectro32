@@ -45,7 +45,7 @@ esp_err_t AppSettingStorage::load() {
 	}
 
 	size_t size = sizeof(AppSettingStorage);
-	err = nvs_get_blob(nvsHandle_, APPSETTING_KEY, this, &size);
+	err = nvs_get_blob(nvsHandle_, (char*)APPSETTING_KEY, this, &size);
 
 	if (size == 0) {
 		APPSETTING_DEBUG_PRINT("Nothing saved yet!\n");

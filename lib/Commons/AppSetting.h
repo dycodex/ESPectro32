@@ -18,8 +18,8 @@
 #define APPSETTING_DEBUG_PRINT(...)  ESP_LOGI("APPSETTING", __VA_ARGS__);
 #define APPSETTING_INFO_PRINT(...)   ESP_LOGI("APPSETTING", __VA_ARGS__);
 
-#define APPSETTING_NAMESPACE		"DCX_APP_SETTING"
-#define APPSETTING_KEY			"SETTING_BLOB"
+#define APPSETTING_NAMESPACE				"DCX_APP_SETTING"
+#define APPSETTING_KEY						"SETTING_BLOB"
 
 #define SETTING_DEFAULT_AP_NAME             "ESPectro32_000"
 #define SETTING_DEFAULT_AP_PASS             "11223344"
@@ -40,10 +40,10 @@ public:
 	char apPass[32+1];
 	char ipAddress[16];
 
-	esp_err_t begin(char *namesp = APPSETTING_NAMESPACE);
+	esp_err_t begin(char *namesp = (char*)APPSETTING_NAMESPACE);
 	esp_err_t init();
 	esp_err_t load();
-	esp_err_t save(char *key = APPSETTING_KEY);
+	esp_err_t save(char *key = (char*)APPSETTING_KEY);
 	void printVals();
 
 	//convenience

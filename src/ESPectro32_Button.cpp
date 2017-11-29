@@ -6,6 +6,8 @@
  */
 
 #include "ESPectro32_Button.h"
+//#define _GLIBCXX_USE_C99
+#include <string>
 #include <GPIO.h>
 
 /* the global instance pointer */
