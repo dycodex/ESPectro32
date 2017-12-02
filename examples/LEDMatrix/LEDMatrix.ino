@@ -11,7 +11,7 @@
 #include <ESPectro32_LedMatrix_Animation.h>
 ESPectro32_LedMatrix_Animation ledMatrixAnim;
 
-void begin() {
+void setup() {
 	ESPectro32.begin();
 
 	ledMatrixAnim.setLedMatrix(ESPectro32.LedMatrix());
