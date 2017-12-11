@@ -77,6 +77,7 @@ public:
 	void disconnect();
 	void run();
 	void runAsync(void *taskData);
+	void stop();
 
 	tcpip_adapter_ip_info_t getStationIpInfo();
 	std::string getStationIpAddress();

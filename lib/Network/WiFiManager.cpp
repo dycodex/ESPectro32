@@ -420,11 +420,18 @@ void WiFiManager::run() {
 	}
 }
 
+void WiFiManager::stop() {
+	disconnect();
+	Task::stop();
+}
+
 void WiFiManager::runAsync(void* taskData) {
 	for(;;) {
 		run();
 		vTaskDelay(1/portTICK_PERIOD_MS);
 	}
+
+	vTaskDelete(NULL);
 }
 
 std::string WiFiManager::getStationIpAddress() {
