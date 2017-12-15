@@ -77,6 +77,7 @@ public:
 	void disconnect();
 	void run();
 	void runAsync(void *taskData);
+	void stop();
 
 	tcpip_adapter_ip_info_t getStationIpInfo();
 	std::string getStationIpAddress();
@@ -103,6 +104,8 @@ public:
 	 * Call this method to "block" current process until WiFi is connected.
 	 */
 	bool waitForConnection();
+
+	bool isConnected();
 
 private:
 	wifi_mode_t currentMode_ = WIFI_MODE_NULL;

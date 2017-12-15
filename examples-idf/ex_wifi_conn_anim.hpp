@@ -65,7 +65,7 @@ static void load_ex_wifi_conn_anim() {
 
 	ledMatrixAnim.start(1800, true);
 
-	wifiMgr.onWiFiConnected([](bool newConn) {
+	wifiMgr.onWiFiConnected([](bool newConn, wifi_config_t *cfg) {
 		//ESP_LOGI("WIFI", "Connected!");
 		ESP_LOGI("WIFI", "IP: %s", wifiMgr.getStationIpAddress().c_str());
 	});

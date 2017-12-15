@@ -8,17 +8,15 @@
 #ifndef COMPONENTS_ESPECTRO32_SRC_ESPECTRO32_BOARD_H_
 #define COMPONENTS_ESPECTRO32_SRC_ESPECTRO32_BOARD_H_
 
-#include <esp_log.h>
-#include <WS2812.h>
 #include <Arduino.h>
 #include <Wire.h>
+#include <esp_log.h>
+#include <WS2812.h>
 #include "ESPectro32_Constants.h"
 #include "ESPectro32_LED.h"
 #include "ESPectro32_RGBLED.h"
 #include "ESPectro32_Button.h"
 #include "ESPectro32_LedMatrix.h"
-#include <Arduino.h>
-#include <Wire.h>
 #include <driver/adc.h>
 #include <SD.h>
 #include <FS.h>

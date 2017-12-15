@@ -42,7 +42,7 @@ static xSemaphoreHandle s_wifi_mux = NULL;
 static smartconfig_status_t currentSmartConfigStatus_ = SC_STATUS_WAIT;
 
 WiFiManager::WiFiManager():
-	Task(0, "wifiManagerTask", 2048, configMAX_PRIORITIES - 2)
+	Task(0, "wifiManagerTask", 2048*2, configMAX_PRIORITIES - 2)
 {
 }
 
@@ -199,8 +199,8 @@ esp_err_t WiFiManager::loadSavedStaConfig(wifi_sta_config_t *saved_sta_config) {
     nvs_handle my_handle;
 
     size_t required_size;
-    char* sta_ssid = "";
-    char* sta_password = "";
+    char* sta_ssid = NULL;
+    char* sta_password = NULL;
 
     ESP_LOGI(TAG, "Opening Non-Volatile Storage (NVS)\n");
 
@@ -342,6 +342,10 @@ bool WiFiManager::waitForConnection() {
 	return (uxBits & WIFI_CONNECTED_EVT);
 }
 
+bool WiFiManager::isConnected() {
+	return (currentStatus_ == WIFI_STATUS_STA_CONNECTED);
+}
+
 void WiFiManager::run() {
 
 	struct timeval tv = {0};
@@ -416,11 +420,18 @@ void WiFiManager::run() {
 	}
 }
 
+void WiFiManager::stop() {
+	disconnect();
+	Task::stop();
+}
+
 void WiFiManager::runAsync(void* taskData) {
 	for(;;) {
 		run();
 		vTaskDelay(1/portTICK_PERIOD_MS);
 	}
+
+	vTaskDelete(NULL);
 }
 
 std::string WiFiManager::getStationIpAddress() {
