@@ -105,9 +105,9 @@ void ESPectro32_Board::stopLEDAnimation() {
  * @return ESPeectro32_LED object
  * @see ESPectro32_LED
  */
-ESPectro32_LED& ESPectro32_Board::LED(uint8_t pin) {
+ESPectro32_LED& ESPectro32_Board::LED(uint8_t pin, bool activeHigh) {
 	if (led_ == NULL) {
-		led_ = new ESPectro32_LED(pin);
+		led_ = new ESPectro32_LED(pin, activeHigh);
 		led_->begin();
 	}
 
