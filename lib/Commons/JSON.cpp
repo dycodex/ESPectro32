@@ -6,6 +6,8 @@
  */
 
 
+// See: https://github.com/DaveGamble/cJSON
+
 #include <string>
 #include <stdlib.h>
 #include "JSON.h"
@@ -95,7 +97,7 @@ void JsonArray::addDouble(double value) {
  * @param [in] value The int value to add to the array.
  */
 void JsonArray::addInt(int value) {
-	cJSON_AddItemToArray(m_node, cJSON_CreateDouble((double)value, value));
+	cJSON_AddItemToArray(m_node, cJSON_CreateNumber((double)value));
 } // addInt
 
 
@@ -188,6 +190,18 @@ std::string JsonArray::toString() {
 
 
 /**
+ * @brief Build an unformatted string representation.
+ * @return A string representation.
+ */
+std::string JsonArray::toStringUnformatted() {
+	char *data = cJSON_PrintUnformatted(m_node);
+	std::string ret(data);
+	free(data);
+	return ret;
+} // toStringUnformatted
+
+
+/**
  * @brief Get the number of elements from the array.
  * @return The int value that represents the number of elements.
  */
@@ -195,10 +209,18 @@ std::size_t JsonArray::size() {
 	return cJSON_GetArraySize(m_node);
 } // size
 
-
+/**
+ * @brief Constructor
+ */
 JsonObject::JsonObject(cJSON* node) {
 	m_node = node;
+} // JsonObject
+
+JsonArray JsonObject::getArray(std::string name) {
+	cJSON *node = cJSON_GetObjectItem(m_node, name.c_str());
+	return JsonArray(node);
 }
+
 
 /**
  * @brief Get the named boolean value from the object.
@@ -259,6 +281,24 @@ std::string JsonObject::getString(std::string name) {
 
 
 /**
+ * @brief Determine if the object has the specified item.
+ * @param [in] name The name of the property to check for presence.
+ * @return True if the object contains this property.
+ */
+bool JsonObject::hasItem(std::string name) {
+	return cJSON_GetObjectItem(m_node, name.c_str()) != nullptr;
+} // hasItem
+
+
+/**
+ * @brief Determine if this represents a valid JSON node.
+ * @return True if this is a valid node and false otherwise.
+ */
+bool JsonObject::isValid() {
+	return m_node != nullptr;
+} // isValid
+
+/**
  * @brief Set the named array property.
  * @param [in] name The name of the property to add.
  * @param [in] array The array to add to the object.
@@ -298,7 +338,7 @@ void JsonObject::setDouble(std::string name, double value) {
  * @return N/A.
  */
 void JsonObject::setInt(std::string name, int value) {
-	cJSON_AddItemToObject(m_node, name.c_str(), cJSON_CreateDouble((double)value, value));
+	cJSON_AddItemToObject(m_node, name.c_str(), cJSON_CreateNumber((double)value));
 } // setInt
 
 
@@ -334,3 +374,15 @@ std::string JsonObject::toString() {
 	free(data);
 	return ret;
 } // toString
+
+
+/**
+ * @brief Build an unformatted string representation.
+ * @return A string representation.
+ */
+std::string JsonObject::toStringUnformatted() {
+	char *data = cJSON_PrintUnformatted(m_node);
+	std::string ret(data);
+	free(data);
+	return ret;
+} // toStringUnformatted

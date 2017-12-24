@@ -56,9 +56,10 @@ void Task::delay(int ms) {
  * The code here will run on the task thread.
  */
 void Task::runTask(void *pData) {
-	ESP_LOGD(tag, ">> runTask");
 	Task *pTask = (Task *)pData;
+	ESP_LOGD(tag, ">> runTask: taskName=%s", pTask->taskName.c_str());
 	pTask->runAsync(pTask->taskData);
+	ESP_LOGD(tag, "<< runTask: taskName=%s", pTask->taskName.c_str());
 	pTask->stop();
 } // runTask
 
