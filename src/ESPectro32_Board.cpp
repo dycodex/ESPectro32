@@ -262,12 +262,41 @@ PWM* ESPectro32_Board::getPwmPtr(int pwmPin) {
 }
 
 bool ESPectro32_Board::beginSDCard(uint8_t ssPin) {
-	if(!SD.begin(ESPECTRO32_SDCARD_CSPIN)){
+	if(!SD.begin(ssPin)){
 		ESPECTRO32_DEBUG_PRINT("SD Card Mount Failed");
 		return false;
 	}
 
+	sdCardBegan_ = true;
 	return true;
 }
 
+void ESPectro32_Board::printSDCardInfo(Print& print) {
+	if (!sdCardBegan_) {
+		print.println("SD Card is not began. Call `beginSDCard` method first!");
+		return;
+	}
+
+	uint8_t cardType = SD.cardType();
+	if(cardType == CARD_NONE){
+		print.println("No SD card attached");
+		return;
+	}
+
+	print.print("SD Card Type: ");
+	if(cardType == CARD_MMC){
+		print.println("MMC");
+	} else if(cardType == CARD_SD){
+		print.println("SDSC");
+	} else if(cardType == CARD_SDHC){
+		print.println("SDHC");
+	} else {
+		print.println("UNKNOWN");
+	}
+
+	uint64_t cardSize = SD.cardSize() / (1024 * 1024);
+	print.printf("SD Card Size: %lluMB\n", cardSize);
+}
+
 ESPectro32_Board ESPectro32;
+
