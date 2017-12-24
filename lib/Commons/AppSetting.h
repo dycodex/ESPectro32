@@ -51,7 +51,8 @@ public:
 
 protected:
 	nvs_handle nvsHandle_ = 0;
-	void reset();
+	size_t settingSize_ = 0;
+	virtual void reset();
 };
 
 extern AppSettingStorage AppSetting;

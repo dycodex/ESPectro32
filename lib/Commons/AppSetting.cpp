@@ -8,7 +8,7 @@
 #include "AppSetting.h"
 
 AppSettingStorage::AppSettingStorage() {
-
+	settingSize_ = sizeof(AppSettingStorage);
 }
 
 AppSettingStorage::~AppSettingStorage() {
@@ -44,7 +44,7 @@ esp_err_t AppSettingStorage::load() {
 		err = init();
 	}
 
-	size_t size = sizeof(AppSettingStorage);
+	size_t size = settingSize_;//sizeof(AppSettingStorage);
 	err = nvs_get_blob(nvsHandle_, (char*)APPSETTING_KEY, this, &size);
 
 	if (size == 0) {
@@ -94,7 +94,7 @@ esp_err_t AppSettingStorage::save(char *key) {
 		return ESP_FAIL;
 	}
 
-	size_t size = sizeof(AppSettingStorage);
+	size_t size = settingSize_;//sizeof(AppSettingStorage);
 	esp_err_t err = nvs_set_blob(nvsHandle_, key, this, size);
 
 	return err;
