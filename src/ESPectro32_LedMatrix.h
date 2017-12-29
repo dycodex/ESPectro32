@@ -78,6 +78,7 @@ public:
 	ESPectro32_LedMatrix();
 	virtual ~ESPectro32_LedMatrix();
 	void drawPixel(int16_t x, int16_t y, uint16_t color);
+	void drawBitmapFull(const uint8_t* data);
 };
 
 #endif /* COMPONENTS_ESPECTRO32_SRC_ESPECTRO32_LEDMATRIX_H_ */

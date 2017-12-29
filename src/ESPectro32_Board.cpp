@@ -261,7 +261,7 @@ PWM* ESPectro32_Board::getPwmPtr(int pwmPin) {
 	return pwm_;
 }
 
-bool ESPectro32_Board::beginSDCard(uint8_t ssPin) {
+bool ESPectro32_Board::SDCardBegin(uint8_t ssPin) {
 	if(!SD.begin(ssPin)){
 		ESPECTRO32_DEBUG_PRINT("SD Card Mount Failed");
 		return false;
@@ -271,7 +271,7 @@ bool ESPectro32_Board::beginSDCard(uint8_t ssPin) {
 	return true;
 }
 
-void ESPectro32_Board::printSDCardInfo(Print& print) {
+void ESPectro32_Board::SDCardPrintInfo(Print& print) {
 	if (!sdCardBegan_) {
 		print.println("SD Card is not began. Call `beginSDCard` method first!");
 		return;
@@ -296,6 +296,46 @@ void ESPectro32_Board::printSDCardInfo(Print& print) {
 
 	uint64_t cardSize = SD.cardSize() / (1024 * 1024);
 	print.printf("SD Card Size: %lluMB\n", cardSize);
+}
+
+void ESPectro32_Board::doSDCardListDir(fs::FS &fs, const char * dirname, uint8_t levels){
+    Serial.printf("Listing directory: %s\n", dirname);
+
+    File root = fs.open(dirname);
+    if(!root){
+        Serial.println("Failed to open directory");
+        return;
+    }
+    if(!root.isDirectory()){
+        Serial.println("Not a directory");
+        return;
+    }
+
+    File file = root.openNextFile();
+    while(file){
+        if(file.isDirectory()){
+            Serial.print("  DIR : ");
+            Serial.println(file.name());
+            if(levels){
+            	doSDCardListDir(fs, file.name(), levels -1);
+            }
+        } else {
+            Serial.print("  FILE: ");
+            Serial.print(file.name());
+            Serial.print("  SIZE: ");
+            Serial.println(file.size());
+        }
+        file = root.openNextFile();
+    }
+}
+
+void ESPectro32_Board::SDCardListDirectory(const char * dirname, Print& print) {
+	if (!sdCardBegan_) {
+		print.println("SD Card is not began. Call `beginSDCard` method first!");
+		return;
+	}
+
+	doSDCardListDir(SD, dirname, 5);
 }
 
 ESPectro32_Board ESPectro32;

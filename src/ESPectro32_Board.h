@@ -136,8 +136,9 @@ public:
 	/**
 	 * @brief Call this method explicitly before any SD Card-related operations
 	 */
-	bool beginSDCard(uint8_t ssPin = ESPECTRO32_SDCARD_CSPIN);
-	void printSDCardInfo(Print &print = Serial);
+	bool SDCardBegin(uint8_t ssPin = ESPECTRO32_SDCARD_CSPIN);
+	void SDCardPrintInfo(Print &print = Serial);
+	void SDCardListDirectory(const char * dirname = "/", Print &print = Serial);
 
 private:
 	ESPectro32_RGBLED *rgbLed_ = NULL;
@@ -150,6 +151,7 @@ private:
 	PWM *getPwmPtr(int pwmPin);
 
 	bool sdCardBegan_ = false;
+	void doSDCardListDir(fs::FS &fs, const char * dirname, uint8_t levels);
 };
 
 extern ESPectro32_Board ESPectro32;

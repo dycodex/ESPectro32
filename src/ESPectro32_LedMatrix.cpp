@@ -54,3 +54,9 @@ void ESPectro32_LedMatrix::drawPixel(int16_t x, int16_t y, uint16_t color) {
 	setLEDPWM(x + y * 16, color, _frame);
 	return;
 }
+
+void ESPectro32_LedMatrix::drawBitmapFull(const uint8_t* data) {
+	setFrame(0);
+	clear();
+	drawBitmap(0, 0, data, 7, 7, 255);
+}

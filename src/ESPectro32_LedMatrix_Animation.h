@@ -10,6 +10,67 @@
 
 #include <Animator.h>
 #include "ESPectro32_LedMatrix.h"
+#include "ESPectro32_Board.h"
+
+static const uint8_t PROGMEM LED_MATRIX_WIFI_ANIM_1[] =
+{ B00000000,
+  B00000000,
+  B00000000,
+  B00000000,
+  B00010000,
+  B00010000,
+  B00000000
+};
+
+static const uint8_t PROGMEM LED_MATRIX_WIFI_ANIM_2[] =
+{ B00000000,
+  B00000000,
+  B00111000,
+  B01000100,
+  B00010000,
+  B00010000,
+  B00000000
+};
+
+static const uint8_t PROGMEM LED_MATRIX_WIFI_ANIM_3[] =
+{ B01111100,
+  B10000010,
+  B00111000,
+  B01000100,
+  B00010000,
+  B00010000,
+  B00000000
+};
+
+static const uint8_t PROGMEM LED_MATRIX_DOWNLOAD_ANIM_1[] =
+{ B00111000,
+  B00111000,
+  B00111000,
+  B10111010,
+  B01111100,
+  B00111000,
+  B00010000
+};
+
+static const uint8_t PROGMEM LED_MATRIX_DOWNLOAD_ANIM_2[] =
+{ B00000000,
+  B00111000,
+  B00111000,
+  B10111010,
+  B01111100,
+  B00111000,
+  B00010000
+};
+
+static const uint8_t PROGMEM LED_MATRIX_DOWNLOAD_ANIM_3[] =
+{ B00000000,
+  B00000000,
+  B00111000,
+  B10111010,
+  B01111100,
+  B00111000,
+  B00010000
+};
 
 #define ESPECTRO32_LEDMATRIX_MAX_FRAME_COUNT 	8
 
@@ -63,6 +124,42 @@ public:
 	void clearFrames();
 	void stop();
 	void run();
+
+	uint8_t getFrameCount() {
+		return frameCount_;
+	}
+
+	inline static ESPectro32_LedMatrix_Animation &startWiFiAnimation(void) {
+		static ESPectro32_LedMatrix_Animation singleton;
+
+		singleton.setLedMatrix(ESPectro32.LedMatrix());
+
+		singleton.addFrameWithData((uint8_t*)LED_MATRIX_WIFI_ANIM_1);
+		singleton.addFrameWithData((uint8_t*)LED_MATRIX_WIFI_ANIM_2);
+		singleton.addFrameWithData((uint8_t*)LED_MATRIX_WIFI_ANIM_3);
+		singleton.addFrameWithDataCallback([](ESPectro32_LedMatrix &ledM) {
+			ledM.clear();
+		});
+
+		singleton.start(1800, true);
+		return singleton;
+	}
+
+	inline static ESPectro32_LedMatrix_Animation &startDownloadAnimation(void) {
+		static ESPectro32_LedMatrix_Animation singleton;
+
+		singleton.setLedMatrix(ESPectro32.LedMatrix());
+
+		singleton.addFrameWithData((uint8_t*)LED_MATRIX_DOWNLOAD_ANIM_1);
+		singleton.addFrameWithData((uint8_t*)LED_MATRIX_DOWNLOAD_ANIM_2);
+		singleton.addFrameWithData((uint8_t*)LED_MATRIX_DOWNLOAD_ANIM_3);
+//		singleton.addFrameWithDataCallback([](ESPectro32_LedMatrix &ledM) {
+//			ledM.clear();
+//		});
+
+		singleton.start(1800, true);
+		return singleton;
+	}
 
 protected:
 	ESPectro32_LedMatrix *ledMatrix_ = NULL;
