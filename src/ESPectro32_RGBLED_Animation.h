@@ -42,6 +42,10 @@ public:
 		return rgbLed_;
 	}
 
+	void setColor(RgbLedColor_t &defaultColor) {
+		defaultColor_ = defaultColor;
+	}
+
 protected:
 	ESPectro32_RGBLED &rgbLed_;
 	RgbLedColor_t &defaultColor_;
