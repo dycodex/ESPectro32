@@ -54,6 +54,8 @@ void ESPectro32_RGBLED_Animation::start(
 		this->rgbLed_.setPixel(pixNum, defaultColor_.red, defaultColor_.green, defaultColor_.blue);
 	}
 
+	this->rgbLed_.show();
+
 	getAnimatorPtr()->start(animUpdateCallback, animFinishedCallback, duration, updateInterval);
 }
 
