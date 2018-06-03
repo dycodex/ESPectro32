@@ -42,8 +42,14 @@ public:
 		return rgbLed_;
 	}
 
+	void setColorCode(uint32_t colorCode) {
+		defaultColor_.setColor(colorCode);
+		RGBLED_ANIM_DEBUG_PRINT("Set color R: %d, G: %d, B: %d", defaultColor_.red, defaultColor_.green, defaultColor_.blue);
+	}
+
 	void setColor(RgbLedColor_t &defaultColor) {
 		defaultColor_ = defaultColor;
+		RGBLED_ANIM_DEBUG_PRINT("Set color R: %d, G: %d, B: %d", defaultColor_.red, defaultColor_.green, defaultColor_.blue);
 	}
 
 protected:

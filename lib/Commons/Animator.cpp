@@ -7,9 +7,22 @@
 
 #include "Animator.h"
 
+#define ANIMATOR_INITED_EVT 				BIT0
+#define ANIMATOR_START_REQ_EVT			BIT1
+#define ANIMATOR_STOP_REQ_EVT 			BIT2
+
+static EventGroupHandle_t animatorEventGroup_ = NULL;
+
 Animator::Animator():
 Task("ws2812AnimatorTask", 4096, configMAX_PRIORITIES - 3){
 
+	if (animatorEventGroup_ == NULL) {
+		animatorEventGroup_ = xEventGroupCreate();
+	}
+
+	xEventGroupClearBits(animatorEventGroup_, ANIMATOR_INITED_EVT);
+	xEventGroupClearBits(animatorEventGroup_, ANIMATOR_START_REQ_EVT);
+	xEventGroupClearBits(animatorEventGroup_, ANIMATOR_STOP_REQ_EVT);
 }
 
 Animator::~Animator() {
@@ -28,9 +41,12 @@ void Animator::start(AnimationUpdateCallback animUpdateCallback,
 	duration_ = duration;
 	animationUpdateCallback_ = animUpdateCallback;
 	animationFinishedCallback_ = animFinishedCallback;
-	running_ = true;
+//	running_ = true;
 
 	elapsed_ = 0;
+
+	xEventGroupSetBits(animatorEventGroup_, ANIMATOR_START_REQ_EVT);
+	xEventGroupClearBits(animatorEventGroup_, ANIMATOR_STOP_REQ_EVT);
 
 	Task::start();
 }
@@ -39,8 +55,21 @@ void Animator::doRepeat() {
 	elapsed_ = 0;
 }
 
+bool Animator::isRunning() {
+	EventBits_t uxBits = xEventGroupWaitBits(animatorEventGroup_, ANIMATOR_START_REQ_EVT, false, false, 1/portTICK_PERIOD_MS);
+	if (uxBits & ANIMATOR_START_REQ_EVT) {
+		return true;
+	}
+
+	return false;
+}
+
 void Animator::stop() {
-	running_ = false;
+
+	xEventGroupSetBits(animatorEventGroup_, ANIMATOR_STOP_REQ_EVT);
+	xEventGroupClearBits(animatorEventGroup_, ANIMATOR_START_REQ_EVT);
+
+//	running_ = false;
 	if (animationFinishedCallback_) {
 		animationFinishedCallback_();
 	}
@@ -49,9 +78,20 @@ void Animator::stop() {
 }
 
 void Animator::run() {
-	if (!running_) {
-		return;
-	}
+//	if (!running_) {
+//		return;
+//	}
+
+//	EventBits_t uxBits;
+//
+//	uxBits = xEventGroupWaitBits(animatorEventGroup_, ANIMATOR_START_REQ_EVT, false, false, portMAX_DELAY); //blocking
+//	if (uxBits & ANIMATOR_START_REQ_EVT) {
+//	}
+
+//	uxBits = xEventGroupWaitBits(animatorEventGroup_, ANIMATOR_STOP_REQ_EVT, false, false, 1/portTICK_PERIOD_MS);
+//	if (uxBits & ANIMATOR_STOP_REQ_EVT) {
+//		return;
+//	}
 
 	uint32_t currentTick = millis();
 	uint32_t delta = currentTick - lastUpdated_;
@@ -87,7 +127,19 @@ void Animator::run() {
 }
 
 void Animator::runAsync(void* data) {
+
+	EventBits_t uxBits;
+
+	uxBits = xEventGroupWaitBits(animatorEventGroup_, ANIMATOR_START_REQ_EVT, false, false, portMAX_DELAY); //blocking
+	if (uxBits & ANIMATOR_START_REQ_EVT) {
+	}
+
 	for(;;) {
+		uxBits = xEventGroupWaitBits(animatorEventGroup_, ANIMATOR_STOP_REQ_EVT, false, false, 1/portTICK_PERIOD_MS);
+		if (uxBits & ANIMATOR_STOP_REQ_EVT) {
+			break;
+		}
+
 		run();
 		delay(1);
 	}

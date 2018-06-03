@@ -42,16 +42,14 @@ public:
 	void stop();
 	void run();
 	void runAsync(void *data);
-	boolean isRunning() {
-		return running_;
-	}
+	bool isRunning();
 
 	int getStep(long elapsed, long t, int v);
 	float getStepFloat(long elapsed, long t, float v);
 private:
 	AnimationUpdateCallback animationUpdateCallback_ = NULL;
 	AnimationFinishedCallback animationFinishedCallback_ = NULL;
-	boolean running_ = false;
+	//boolean running_ = false;
 	uint16_t updateInterval_ = 100, elapsed_ = 0, duration_ = 0;
 	uint32_t lastUpdated_ = 0;
 	bool repeat_ = false;
