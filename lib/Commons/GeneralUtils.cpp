@@ -7,6 +7,7 @@
 
 #include "GeneralUtils.h"
 #include <esp_log.h>
+#include <esp_system.h>
 #include <string.h>
 #include <stdio.h>
 #include <string>
@@ -16,21 +17,14 @@
 #include <esp_err.h>
 #include <nvs.h>
 #include <esp_wifi.h>
+#include <esp_heap_caps.h>
+#include <esp_system.h>
 
 static const char* LOG_TAG = "GeneralUtils";
 
 static const char kBase64Alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "abcdefghijklmnopqrstuvwxyz"
     "0123456789+/";
-
-GeneralUtils::GeneralUtils() {
-	// TODO Auto-generated constructor stub
-
-}
-
-GeneralUtils::~GeneralUtils() {
-	// TODO Auto-generated destructor stub
-}
 
 static int base64EncodedLength(size_t length) {
 	return (length + 2 - ((length + 2) % 3)) / 3 * 4;
@@ -104,6 +98,40 @@ bool GeneralUtils::base64Encode(const std::string &in, std::string *out) {
 
 	return (enc_len == out->size());
 } // base64Encode
+
+
+/**
+ * @brief Dump general info to the log.
+ * Data includes:
+ * * Amount of free RAM
+ */
+void GeneralUtils::dumpInfo() {
+	size_t freeHeap = heap_caps_get_free_size(MALLOC_CAP_8BIT);
+	esp_chip_info_t chipInfo;
+	esp_chip_info(&chipInfo);
+	ESP_LOGD(LOG_TAG, "--- dumpInfo ---");
+	ESP_LOGD(LOG_TAG, "Free heap: %d", freeHeap);
+	ESP_LOGD(LOG_TAG, "Chip Info: Model: %d, cores: %d, revision: %d", chipInfo.model, chipInfo.cores, chipInfo.revision);
+	ESP_LOGD(LOG_TAG, "ESP-IDF version: %s", esp_get_idf_version());
+	ESP_LOGD(LOG_TAG, "---");
+} // dumpInfo
+
+
+/**
+ * @brief Does the string end with a specific character?
+ * @param [in] str The string to examine.
+ * @param [in] c The character to look form.
+ * @return True if the string ends with the given character.
+ */
+bool GeneralUtils::endsWith(std::string str, char c) {
+	if (str.empty()) {
+		return false;
+	}
+	if (str.at(str.length()-1) == c) {
+		return true;
+	}
+	return false;
+} // endsWidth
 
 
 static int DecodedLength(const std::string &in) {
@@ -254,6 +282,7 @@ void GeneralUtils::hexDump(uint8_t* pData, uint32_t length) {
 }
 */
 
+
 /**
  * @brief Dump a representation of binary data to the console.
  *
@@ -261,7 +290,7 @@ void GeneralUtils::hexDump(uint8_t* pData, uint32_t length) {
  * @param [in] length Length of the data (in bytes) to be logged.
  * @return N/A.
  */
-void GeneralUtils::hexDump(uint8_t* pData, uint32_t length) {
+void GeneralUtils::hexDump(const uint8_t* pData, uint32_t length) {
 	char ascii[80];
 	char hex[80];
 	char tempBuf[80];
@@ -297,6 +326,7 @@ void GeneralUtils::hexDump(uint8_t* pData, uint32_t length) {
 	}
 } // hexDump
 
+
 /**
  * @brief Convert an IP address to string.
  * @param ip The 4 byte IP address.
@@ -307,6 +337,25 @@ std::string GeneralUtils::ipToString(uint8_t *ip) {
 	s << (int)ip[0] << '.' << (int)ip[1] << '.' << (int)ip[2] << '.' << (int)ip[3];
 	return s.str();
 } // ipToString
+
+
+/**
+ * @brief Split a string into parts based on a delimiter.
+ * @param [in] source The source string to split.
+ * @param [in] delimiter The delimiter characters.
+ * @return A vector of strings that are the split of the input.
+ */
+std::vector<std::string> GeneralUtils::split(std::string source, char delimiter) {
+	// See also: https://stackoverflow.com/questions/5167625/splitting-a-c-stdstring-using-tokens-e-g
+	std::vector<std::string> strings;
+	std::istringstream iss(source);
+	std::string s;
+	while(std::getline(iss, s, delimiter)) {
+		strings.push_back(trim(s));
+	}
+	return strings;
+} // split
+
 
 /**
  * @brief Convert an ESP error code to a string.
@@ -384,4 +433,109 @@ const char* GeneralUtils::errorToString(esp_err_t errCode) {
 		}
 	return "Unknown ESP_ERR error";
 } // errorToString
+
+/**
+ * @brief Convert a wifi_err_reason_t code to a string.
+ * @param [in] errCode The errCode to be converted.
+ * @return A string representation of the error code.
+ * 
+ * @note: wifi_err_reason_t values as of April 2018 are: (1-24, 200-204) and are defined in ~/esp-idf/components/esp32/include/esp_wifi_types.h.
+ */
+const char* GeneralUtils::wifiErrorToString(uint8_t errCode) {
+  if (errCode == ESP_OK)
+    return "ESP_OK (received SYSTEM_EVENT_STA_GOT_IP event)";
+  if (errCode == UINT8_MAX)
+    return "Not Connected (default value)";
+
+	switch((wifi_err_reason_t) errCode) {
+	case WIFI_REASON_UNSPECIFIED:
+		return "WIFI_REASON_UNSPECIFIED";
+	case WIFI_REASON_AUTH_EXPIRE:
+		return "WIFI_REASON_AUTH_EXPIRE";
+	case WIFI_REASON_AUTH_LEAVE:
+		return "WIFI_REASON_AUTH_LEAVE";
+	case WIFI_REASON_ASSOC_EXPIRE:
+		return "WIFI_REASON_ASSOC_EXPIRE";
+	case WIFI_REASON_ASSOC_TOOMANY:
+		return "WIFI_REASON_ASSOC_TOOMANY";
+	case WIFI_REASON_NOT_AUTHED:
+		return "WIFI_REASON_NOT_AUTHED";
+	case WIFI_REASON_NOT_ASSOCED:
+		return "WIFI_REASON_NOT_ASSOCED";
+	case WIFI_REASON_ASSOC_LEAVE:
+		return "WIFI_REASON_ASSOC_LEAVE";
+	case WIFI_REASON_ASSOC_NOT_AUTHED:
+		return "WIFI_REASON_ASSOC_NOT_AUTHED";
+	case WIFI_REASON_DISASSOC_PWRCAP_BAD:
+		return "WIFI_REASON_DISASSOC_PWRCAP_BAD";
+	case WIFI_REASON_DISASSOC_SUPCHAN_BAD:
+		return "WIFI_REASON_DISASSOC_SUPCHAN_BAD";
+	case WIFI_REASON_IE_INVALID:
+		return "WIFI_REASON_IE_INVALID";
+	case WIFI_REASON_MIC_FAILURE:
+		return "WIFI_REASON_MIC_FAILURE";
+	case WIFI_REASON_4WAY_HANDSHAKE_TIMEOUT:
+		return "WIFI_REASON_4WAY_HANDSHAKE_TIMEOUT";
+	case WIFI_REASON_GROUP_KEY_UPDATE_TIMEOUT:
+		return "WIFI_REASON_GROUP_KEY_UPDATE_TIMEOUT";
+	case WIFI_REASON_IE_IN_4WAY_DIFFERS:
+		return "WIFI_REASON_IE_IN_4WAY_DIFFERS";
+	case WIFI_REASON_GROUP_CIPHER_INVALID:
+		return "WIFI_REASON_GROUP_CIPHER_INVALID";
+	case WIFI_REASON_PAIRWISE_CIPHER_INVALID:
+		return "WIFI_REASON_PAIRWISE_CIPHER_INVALID";
+	case WIFI_REASON_AKMP_INVALID:
+		return "WIFI_REASON_AKMP_INVALID";
+	case WIFI_REASON_UNSUPP_RSN_IE_VERSION:
+		return "WIFI_REASON_UNSUPP_RSN_IE_VERSION";
+	case WIFI_REASON_INVALID_RSN_IE_CAP:
+		return "WIFI_REASON_INVALID_RSN_IE_CAP";
+	case WIFI_REASON_802_1X_AUTH_FAILED:
+		return "WIFI_REASON_802_1X_AUTH_FAILED";
+	case WIFI_REASON_CIPHER_SUITE_REJECTED:
+		return "WIFI_REASON_CIPHER_SUITE_REJECTED";
+
+	case WIFI_REASON_BEACON_TIMEOUT:
+		return "WIFI_REASON_BEACON_TIMEOUT";
+	case WIFI_REASON_NO_AP_FOUND:
+		return "WIFI_REASON_NO_AP_FOUND";
+	case WIFI_REASON_AUTH_FAIL:
+		return "WIFI_REASON_AUTH_FAIL";
+	case WIFI_REASON_ASSOC_FAIL:
+		return "WIFI_REASON_ASSOC_FAIL";
+	case WIFI_REASON_HANDSHAKE_TIMEOUT:
+		return "WIFI_REASON_HANDSHAKE_TIMEOUT";
+	}
+	return "Unknown ESP_ERR error";
+} // wifiErrorToString
+
+
+
+/**
+ * @brief Convert a string to lower case.
+ * @param [in] value The string to convert to lower case.
+ * @return A lower case representation of the string.
+ */
+std::string GeneralUtils::toLower(std::string& value) {
+	// Question: Could this be improved with a signature of:
+	// std::string& GeneralUtils::toLower(std::string& value)
+	std::transform(value.begin(), value.end(), value.begin(), ::tolower);
+	return value;
+} // toLower
+
+
+/**
+ * @brief Remove white space from a string.
+ */
+std::string GeneralUtils::trim(const std::string& str)
+{
+    size_t first = str.find_first_not_of(' ');
+    if (std::string::npos == first)
+    {
+        return str;
+    }
+    size_t last = str.find_last_not_of(' ');
+    return str.substr(first, (last - first + 1));
+} // trim
+
 
