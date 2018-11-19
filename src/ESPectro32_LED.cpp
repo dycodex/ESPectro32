@@ -167,8 +167,7 @@ PWM* ESPectro32_LED::getLedPwmPtr() {
 
 
 
-ESPectro32_LED_Animator::ESPectro32_LED_Animator():
-		Task("ESPectro32_LED_Animator_Task", 2048, configMAX_PRIORITIES - 5)
+ESPectro32_LED_Animator::ESPectro32_LED_Animator(): Task("ESPectro32_LED_Animator_Task", 2048, configMAX_PRIORITIES - 5)
 {
     maxOut_ = 0xFFFFFF;
     speed_ = 1000;
@@ -263,15 +262,17 @@ bool ESPectro32_LED_Animator::runAnimation() {
         //PWM
         for(int i=0; i < numLeds_; i++)
         {
-            int j = 3*i;
+//            int j = 3*i;
 
             if (numPins_ == 1) { //for 1 color LED
-//                analogWrite(pins_[0], (ledColors_[i].r * maxOut_.b) >> 8);
+            		uint32_t currentVal = ((ledColors_[i].red * maxOut_.red) >> 8);
+//            	Serial.printf("Val = %d\n", currentVal);
+//              analogWrite(pins_[0], (ledColors_[i].r * maxOut_.b) >> 8);
             		if (activeHigh_) {
-            			ledcAnalogWrite(LEDC_CHANNEL_0, ((ledColors_[i].red * maxOut_.red) >> 8));
+            			ledcAnalogWrite(LEDC_CHANNEL_0, currentVal);
             		}
             		else {
-            			ledcAnalogWrite(LEDC_CHANNEL_0, LEDC_VALUE_MAX - ((ledColors_[i].red * maxOut_.red) >> 8));
+            			ledcAnalogWrite(LEDC_CHANNEL_0, LEDC_VALUE_MAX - currentVal);
             		}
             }
             else {

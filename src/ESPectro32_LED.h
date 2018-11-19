@@ -63,10 +63,10 @@ public:
 private:
 
     ESPectro32_LED_AnimationType animationType_ = ESPectro_LED_Animation_OFF;
-    bool activeHigh_;
+    bool activeHigh_ = false;
     uint32_t speed_;
     uint32_t refreshMillis_;
-    uint32_t refreshRate_;   // current refresh rate
+    uint32_t refreshRate_ = 20;   // current refresh rate
     unsigned long animStartTime_, lastRefreshTime_;
     unsigned long animTimeOut_ = 30000;
     bool animating_ = false;

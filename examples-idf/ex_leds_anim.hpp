@@ -24,8 +24,8 @@ static void load_ex_leds_anim() {
 	//	ESPectro32.turnOffLED();
 
 	//Single color LED animation
-	ESPectro32.LED().setAnimation(ESPectro_LED_Animation_Fading, 3000, 3);
-	//ESPectro32.LED().blink(1000, 3);
+//	ESPectro32.LED().setAnimation(ESPectro_LED_Animation_Fading, 3000, 3);
+	ESPectro32.LED().blink(1000, 10);
 
 
 //	ESPectro32.RgbLed().setPixel(0, 120, 128, 7);

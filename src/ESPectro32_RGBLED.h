@@ -19,7 +19,7 @@
  */
 class ESPectro32_RGBLED: public WS2812 {
 public:
-	ESPectro32_RGBLED(gpio_num_t gpioNum = ESPECTRO32_RGBLED_GPIO);
+	ESPectro32_RGBLED(gpio_num_t gpioNum = ESPECTRO32_RGBLED_PIN);
 	virtual ~ESPectro32_RGBLED();
 };
 

@@ -13,6 +13,8 @@
 #include <functional>
 #include <Task.h>
 
+#define ESPECTRO32_BUTTON_USING_INT					0
+
 #define ESPECTRO32_BUTTON_DEBOUNCE_DURATION_MS        30
 #define ESPECTRO32_BUTTON_PRESS_DURATION_MS           750
 #define ESPECTRO32_BUTTON_CLICK_DURATION_MS           250
@@ -73,6 +75,10 @@ public:
 //	void setGpioNumber(uint8_t g) {
 //		gpioNumber_ = g;
 //	}
+
+#if ESPECTRO32_BUTTON_USING_INT
+	void triggerInterrupt();
+#endif
 
 private:
 

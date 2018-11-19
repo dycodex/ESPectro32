@@ -8,10 +8,15 @@
 #include "ESPectro32_Button.h"
 //#define _GLIBCXX_USE_C99
 #include <string>
-#include <GPIO.h>
+//#include <GPIO.h>
 
 /* the global instance pointer */
 //static xQueueHandle button_evt_queue = NULL;
+
+#if ESPECTRO32_BUTTON_USING_INT
+#define ESPECTRO_BUTTON_INTERRUPTED_EVT		BIT0
+static EventGroupHandle_t espectroButtonEventGroup_ = NULL;
+#endif
 
 ESPectro32_Button::ESPectro32_Button(uint8_t gpio, boolean activeHigh):
 gpioNumber_(gpio), activeHigh_(activeHigh), Task("ESPectro32_Button_Task", 2048, configMAX_PRIORITIES - 2) {
@@ -46,7 +51,7 @@ ESPectro32_Button::Button_State ESPectro32_Button::getState() {
 }
 
 void ESPectro32_Button::runAsync(void *data) {
-	uint8_t currGpioNumber = *((uint8_t*)data);
+//	uint8_t currGpioNumber = *((uint8_t*)data);
 
 	//uint8_t io_num;
 	for(;;) {
@@ -67,9 +72,27 @@ void ESPectro32_Button::runAsync(void *data) {
 
 		//run();
 		examine();
-		vTaskDelay(50/portTICK_PERIOD_MS);
+		vTaskDelay(10/portTICK_PERIOD_MS);
 	}
 }
+
+#if ESPECTRO32_BUTTON_USING_INT
+void IRAM_ATTR ESPectro32_Button_Interrupt(void *arg) {
+
+	ESPectro32_Button *self = (ESPectro32_Button*) arg;
+	self->triggerInterrupt();
+}
+
+void ESPectro32_Button::triggerInterrupt() {
+	if  (espectroButtonEventGroup_ != NULL) {
+		Serial.printf("=====================\n");
+//		BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+//		xEventGroupSetBitsFromISR(espectroButtonEventGroup_, ESPECTRO_BUTTON_INTERRUPTED_EVT, &xHigherPriorityTaskWoken);
+//		portYIELD_FROM_ISR();
+	}
+}
+
+#endif
 
 void ESPectro32_Button::start(void *taskData) {
 	/*
@@ -78,17 +101,43 @@ void ESPectro32_Button::start(void *taskData) {
 	}
 	*/
 
-	ESP32CPP::GPIO::setInput((gpio_num_t)gpioNumber_);
-	//ESP32CPP::GPIO::setInterruptType((gpio_num_t)gpioNumber_, (gpio_int_type_t)GPIO_INTR_ANYEDGE);
-	//ESP32CPP::GPIO::addISRHandler((gpio_num_t)gpioNumber_, ESPectro32_Button_Interrupt, (void*)gpioNumber_);
+	pinMode(gpioNumber_, activeHigh_? INPUT_PULLDOWN: INPUT_PULLUP);
+
+//	ESP32CPP::GPIO::setInput((gpio_num_t)gpioNumber_);
+//	ESP32CPP::GPIO::setInterruptType((gpio_num_t)gpioNumber_, (gpio_int_type_t)GPIO_INTR_ANYEDGE);
+//	ESP32CPP::GPIO::addISRHandler((gpio_num_t)gpioNumber_, ESPectro32_Button_Interrupt, (void*)gpioNumber_);
+
+#if ESPECTRO32_BUTTON_USING_INT
+	if  (espectroButtonEventGroup_ == NULL) {
+		espectroButtonEventGroup_ = xEventGroupCreate();
+	}
+
+	xEventGroupClearBits(espectroButtonEventGroup_, ESPECTRO_BUTTON_INTERRUPTED_EVT);
+	::attachInterruptArg(gpioNumber_, ESPectro32_Button_Interrupt, (void*)this, CHANGE);
+
+#endif
 
 	Task::start((void*)gpioNumber_);
 }
 
 void ESPectro32_Button::examine() {
 
-	bool pressed = isActive();
 	unsigned long now = millis(); // current (relative) time in msecs.
+
+#if ESPECTRO32_BUTTON_USING_INT
+//	EventBits_t uxBits = xEventGroupWaitBits(espectroButtonEventGroup_, ESPECTRO_BUTTON_INTERRUPTED_EVT, pdTRUE, pdFALSE, 10 / portTICK_PERIOD_MS);
+	EventBits_t uxBits = xEventGroupWaitBits(espectroButtonEventGroup_, ESPECTRO_BUTTON_INTERRUPTED_EVT, pdFALSE, pdFALSE, portMAX_DELAY);
+	if (uxBits & ESPECTRO_BUTTON_INTERRUPTED_EVT) {
+		//lanjut
+		xEventGroupClearBits(espectroButtonEventGroup_, ESPECTRO_BUTTON_INTERRUPTED_EVT);
+	} else {
+		return;
+	}
+
+#endif
+
+	bool pressed = isActive();
+//	Serial.printf("BTN CHANGED: %d\n", pressed);
 
 	// Implementation of the state machine
 	if (buttonState_ == ESPectro32ButtonUnknown) {
@@ -264,10 +313,10 @@ void ESPectro32_Button::onDoublePressed(ButtonActionCallback cb) {
 }
 
 bool ESPectro32_Button::isActive() {
-	// int buttonState = digitalRead(gpioNumber_);
-	// boolean pressed = activeHigh_ ? buttonState == HIGH : buttonState == LOW;
-	bool buttonState = ESP32CPP::GPIO::read((gpio_num_t)gpioNumber_);
-	bool pressed = activeHigh_ ? buttonState : !buttonState;
+	int buttonState = digitalRead(gpioNumber_);
+	boolean pressed = activeHigh_ ? buttonState == HIGH : buttonState == LOW;
+//	bool buttonState = ESP32CPP::GPIO::read((gpio_num_t)gpioNumber_);
+//	bool pressed = activeHigh_ ? buttonState : !buttonState;
 	return pressed;
 }
 
