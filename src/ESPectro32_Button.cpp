@@ -19,7 +19,8 @@ static EventGroupHandle_t espectroButtonEventGroup_ = NULL;
 #endif
 
 ESPectro32_Button::ESPectro32_Button(uint8_t gpio, boolean activeHigh):
-gpioNumber_(gpio), activeHigh_(activeHigh), Task("ESPectro32_Button_Task", 2048, configMAX_PRIORITIES - 2) {
+ Task("ESPectro32_Button_Task", 2048, configMAX_PRIORITIES - 2),
+gpioNumber_(gpio), activeHigh_(activeHigh) {
 
 	//std::string taskName = "ESPectro32_Button_Task" + std::to_string((int)gpioNumber_);
 
